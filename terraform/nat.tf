@@ -1,18 +1,3 @@
-data "aws_ami" "al2023_arm" {
-  most_recent = true
-  owners      = ["137112412989"] # Amazon
-
-  filter {
-    name   = "name"
-    values = ["al2023-ami-*-kernel-6.1-arm64"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["arm64"]
-  }
-}
-
 # https://registry.terraform.io/modules/terraform-aws-modules/ec2-instance/aws/6.1.1
 module "nat_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
