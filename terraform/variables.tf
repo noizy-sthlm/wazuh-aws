@@ -37,3 +37,8 @@ variable "allowed_ssh_cidr" {
   type        = string
   description = " Allow ipv4/cidr to SSH to the NAT instance"
 }
+
+variable "agent_ipv4_cidr" {
+  type = string
+  description = "CIDR block for Wazuh agents to connect to the manager"
+}
