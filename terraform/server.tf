@@ -24,7 +24,7 @@ module "wazuh_server" {
 
   root_block_device = {
     type        = "gp3"
-    size        = 10
+    size        = 20
     encrypted   = true
   }
 
