@@ -5,7 +5,7 @@ module "wazuh_server" {
 
   name = "${var.project_name}-server"
 
-  ami           = data.aws_ami.al2023_arm.id
+  ami           = data.aws_ami.ubuntu_noble_numbat.id
   instance_type = "t4g.small"
 
   subnet_id = module.vpc.public_subnets[0]

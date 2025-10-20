@@ -5,7 +5,7 @@ module "wazuh_indexer" {
 
   name = "${var.project_name}-indexer"
 
-  ami           = data.aws_ami.al2023_arm.id
+  ami           = data.aws_ami.ubuntu_noble_numbat.id
   instance_type = "t4g.medium"
 
   subnet_id = module.vpc.private_subnets[0]
