@@ -1,0 +1,22 @@
+---
+# https://github.com/wazuh/wazuh-ansible
+# Dashboard
+  - hosts: dashboard
+    roles:
+      - role: wazuh/wazuh-dashboard
+    become: yes
+    become_user: root
+    vars:
+      dashboard_server_host: "{{dashboard_ip}}"
+      indexer_network_host: "{{indexer_ip}}"
+      indexer_cluster_nodes:
+        - "{{indexer_ip}}"
+      dashboard_node_name: node-3
+      wazuh_api_credentials:
+        - id: default
+          url: "https://{{server_ip}}"
+          port: 55000
+          username: custom-user
+          password: SecretPassword1!
+      ansible_shell_allow_world_readable_temp: true
+      

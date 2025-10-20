@@ -1,0 +1,48 @@
+---
+# https://github.com/wazuh/wazuh-ansible
+# Certificate generation
+  - hosts: indexer
+    roles:
+      - role: wazuh/wazuh-indexer
+        perform_installation: false
+    become: no
+    vars:
+      instances:           # A certificate will be generated for every node using the name as CN.
+        node1:
+          name: node-1
+          ip: "{{indexer_ip}}"
+          role: indexer
+        node2:
+          name: node-2
+          ip: "{{server_ip}}"
+          role: wazuh
+        node3:
+          name: node-3
+          ip: "{{dashboard_ip}}"
+          role: dashboard
+    tags:
+      - generate-certs
+
+# Indexer
+  - hosts: indexer
+    roles:
+      - role: wazuh/wazuh-indexer
+    become: yes
+    become_user: root
+    vars:
+        single_node: true
+        minimum_master_nodes: 1
+        indexer_network_host: "{{indexer_ip}}"
+        instances:
+          node1:
+            name: node-1
+            ip: "{{indexer_ip}}"
+            role: indexer
+          node2:
+            name: node-2
+            ip: "{{server_ip}}"
+            role: wazuh
+          node3:
+            name: node-3
+            ip: "{{dashboard_ip}}"
+            role: dashboard
