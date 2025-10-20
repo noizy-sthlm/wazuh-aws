@@ -18,6 +18,9 @@ module "wazuh_indexer" {
   security_group_ingress_rules  = { "endpoint-ssh": { "referenced_security_group_id": resource.aws_security_group.ec2_instance_connect_endpoint.id, "description": "SSH-from-EC2_Instance_Connect_Endpoint", "from_port": 22, "to_port": 22, "ip_protocol": "tcp" },
                                     "Wazuh-indexer-RESTful-API": { "cidr_ipv4": module.vpc.vpc_cidr_block, "description": "RESTful API from VPC", "from_port": 9200, "to_port": 9200, "ip_protocol": "tcp" }}
 
+  #vpc_security_group_ids = [resource.]
+  key_name = var.key_name
+
   # Root volume: 8GB gp3, encrypted
   root_block_device = {
     type        = "gp3"

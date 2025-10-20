@@ -10,6 +10,8 @@ module "wazuh_dashboard" {
 
   subnet_id = module.vpc.private_subnets[0]
 
+  key_name = var.key_name
+
   # https://documentation.wazuh.com/current/getting-started/architecture.html
   create_security_group         = true
   security_group_egress_rules   = {"allow-all": { "cidr_ipv4": "0.0.0.0/0", "description": "Allow all", "ip_protocol": "-1" }}
