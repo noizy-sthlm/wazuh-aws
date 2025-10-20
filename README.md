@@ -1,4 +1,4 @@
 # Wazuh on AWS
 
-This repository is a work-in-progress collection of scripts for deploying Wazuh on AWS.  
-The goal is to build a minimal but functional setup suitable for a homelabs, with a focus on keeping it cost effective.
+This is a work-in-progress project with the goal of automating the deployment Wazuh on AWS.  
+It aims to provide a minimal, yet functional, setup suitable for homelabs and other test environments.
