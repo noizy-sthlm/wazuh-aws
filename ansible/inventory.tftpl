@@ -1,0 +1,16 @@
+ds  ansible_host=${ds_instance_id} private_ip=${ds_private_ip}
+mngr ansible_host=${mngr_instance_id} private_ip=${mngr_private_ip}
+idx  ansible_host=${idx_instance_id} private_ip=${idx_private_ip}
+
+[dashboard]
+ds
+
+[manager]
+mngr
+
+[indexer]
+idx
+
+[all:vars]
+ansible_ssh_user=ubuntu
+ansible_ssh_private_key_file=../config/id_rsa

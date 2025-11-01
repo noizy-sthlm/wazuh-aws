@@ -1,0 +1,26 @@
+---
+# https://github.com/wazuh/wazuh-ansible
+# Wazuh cluster
+  - hosts: manager
+    roles:
+      - role: "wazuh/ansible-wazuh-manager"
+      - role: "wazuh/ansible-filebeat-oss"
+    become: yes
+    become_user: root
+    vars:
+      wazuh_manager_config:
+        connection:
+            - type: 'secure'
+              port: '1514'
+              protocol: 'tcp'
+              queue_size: 131072
+        api:
+            https: 'yes'
+            bind_address: "{{hostvars.mngr.private_ip}}"
+      wazuh_api_users:
+        - username: custom-user
+          password: "{{wazuh_api_password}}"
+      filebeat_node_name: node-2
+      filebeat_output_indexer_hosts:
+        - "{{hostvars.idx.private_ip}}:9200"
+      indexer_security_password: "{{indexer_admin_password}}"
