@@ -2,24 +2,24 @@ import subprocess
 import sys
 import os
 import argparse
+import boto3
+from botocore.exceptions import ClientError
 
 
 
 def check_prerequisites():
-    if not os.path.exists("config/terraform.tfvars"):
-        print("Configuration file not found: config/terraform.tfvars\n",
-              "Create the configuration file before deploying", file=sys.stderr)
-        raise FileNotFoundError("Configuration file not found")
     
-    if not os.path.exists("config/id_rsa"):
-        print("SSH key file not found: config/id_rsa\n",
-              "Create the SSH key file before deploying", file=sys.stderr)
-        raise FileNotFoundError("SSH key file not found")
-    
-    if not os.path.exists("config/secrets.yml"):
-        print("Secrets not found: config/secrets.yml\n",
-              "Create secrets.yml before deploying", file=sys.stderr)
-        raise FileNotFoundError("Secrets file not found")
+    required_files = [
+        "id_rsa",
+        "terraform.tfvars",
+        "secrets.yml",
+        "state.config"
+    ]
+
+    for file in required_files:
+        if not os.path.exists(f"config/{file}"):
+            print(f"{file} was not found. Create it before proceeding", file=sys.stderr)
+            raise FileNotFoundError(f"config/{file} not found")
 
 
 
@@ -41,7 +41,8 @@ def clone_wazuh_ansible():
 
 def init_terraform():
     subprocess.run(["terraform", "init",
-                    "--input=false"],
+                    "--input=false",
+                    "-backend-config=../config/state.config"],
                    cwd="terraform/",
                    check=True)
 
@@ -105,16 +106,69 @@ def delete_certificates():
 
 
 
+def create_s3_bucket(name, region):
+    # https://docs.aws.amazon.com/AmazonS3/latest/userguide/manage-versioning-examples.html
+    # Object are encrypted at rest with S3 managed keys by default
+    # The Bucket and containing Objects will be private to the Account and IAM users with permissions by default
+    try:
+        s3 = boto3.client("s3", region_name=region)
+        bucketConfig = {}
+
+        if region != 'us-east-1':
+            bucketConfig['CreateBucketConfiguration'] = {'LocationConstraint': region}
+
+        s3.create_bucket(Bucket=name, **bucketConfig)
+
+    
+    except ClientError as error:
+        if error.response["Error"]["Code"] == "BucketAlreadyOwnedByYou":
+            print(f"Backend bucket {name} allready set up")
+        else:
+            print(f"Could not create backend bucket", file=sys.stderr)
+            raise error
+
+
+
+def delete_s3_bucket(name, region):
+    # https://stackoverflow.com/a/43328646
+    try:
+
+        s3 = boto3.resource("s3", region_name=region)
+        bucket = s3.Bucket(name)
+        bucket.objects.all().delete()
+        bucket.delete()
+        print("S3 backend deleted: Objects and bucket deleted")
+    
+    except Exception as e:
+        print(f"An error occurred while attempting to delete the bucket: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+
+def read_backend_config():
+    config = {}
+
+    with open("config/state.config", 'r') as file:
+        for line in file:
+            line = line.strip()
+            if line and (not line.startswith("#")) and ("=" in line):
+                key, value = line.split("=", 1)
+                config[key.strip()] = value.strip().strip('"')
+
+    return config
+
+
+
 def main():
 
     parser = argparse.ArgumentParser(
         description="Wazuh-AWS Tool",
-        epilog="By noizy-sthml"
+        epilog="By noizy-sthlm"
         )
 
     parser.add_argument(
         "action",
-        choices=["deploy", "destroy"]
+        choices=["deploy", "destroy", "create-s3-backend", "delete-s3-backend"]
     )
 
     parser.add_argument(
@@ -140,8 +194,17 @@ def main():
 
         elif args.action == "destroy":
             check_prerequisites()
+            init_terraform()
             destroy_infrastructure(auto_approve=not args.no_auto_approve)
             delete_certificates()
+
+        elif args.action == "create-s3-backend":
+            backend_config = read_backend_config()
+            create_s3_bucket(backend_config["bucket"], backend_config["region"])
+
+        elif args.action == "delete-s3-backend":
+            backend_config = read_backend_config()
+            delete_s3_bucket(backend_config["bucket"], backend_config["region"])
     
     except Exception as e:
         print(f"An error occurred: {e}", file=sys.stderr)

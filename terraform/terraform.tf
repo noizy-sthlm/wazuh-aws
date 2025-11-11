@@ -11,4 +11,11 @@ terraform {
       version = "~> 2.5.0"
     }
   }
-}
+
+  backend "s3" {
+    use_lockfile  = true
+    key           = "wazuh-aws/terraform.tfstate"
+    bucket        = ""
+    region        = ""
+  }
+} 
