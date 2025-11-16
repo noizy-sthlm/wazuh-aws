@@ -6,6 +6,8 @@ output "indexer_instance_id"    { value = module.wazuh_indexer.id }
 output "server_instance_id"     { value = module.wazuh_server.id }
 output "dashboard_instance_id"  { value = module.wazuh_dashboard.id }
 
+output "instance_connect_endpoint_id" { value = aws_ec2_instance_connect_endpoint.ec2_instance_connect.id}
+
 resource "local_file" "ansible_inventory" {
   content  = templatefile("${path.module}/../ansible/inventory.tftpl",
     {

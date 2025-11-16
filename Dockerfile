@@ -48,7 +48,7 @@ RUN pip install -r ./requirements.txt
 USER wazuh-aws
 
 # Wazuh Desktop access
-EXPOSE 5601
+EXPOSE 443
 
 ENTRYPOINT ["python3", "wazuh-aws.py"]
 CMD ["--help"]

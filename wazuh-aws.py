@@ -4,6 +4,7 @@ import os
 import argparse
 import boto3
 from botocore.exceptions import ClientError
+import json
 
 
 
@@ -159,6 +160,29 @@ def read_backend_config():
 
 
 
+def tunnel_dashboard():
+    try:
+        result = subprocess.run(["terraform", "output", "-json"], cwd="terraform/", capture_output=True, text=True, check=True)
+
+        outputs = json.loads(result.stdout)
+
+        dashboard_ip = outputs["dashboard_ip"]["value"]
+        dashboard_instance_id = outputs["dashboard_instance_id"]["value"]
+        instance_connect_endpoint_id = outputs["instance_connect_endpoint_id"]["value"]
+
+        subprocess.run(["ssh",
+                        "-i", "config/id_rsa",
+                        f"ubuntu@{dashboard_instance_id}",
+                        "-o", f"ProxyCommand=aws ec2-instance-connect open-tunnel --instance-id {dashboard_instance_id} --instance-connect-endpoint-id {instance_connect_endpoint_id}",
+                        "-L", f"443:{dashboard_ip}:443"],
+                        check=True)
+        
+    except Exception as error:
+        print(f"Could create the tunnel", file=sys.stderr)
+        raise error
+
+
+
 def main():
 
     parser = argparse.ArgumentParser(
@@ -168,7 +192,7 @@ def main():
 
     parser.add_argument(
         "action",
-        choices=["deploy", "destroy", "create-s3-backend", "delete-s3-backend"]
+        choices=["deploy", "destroy", "create-s3-backend", "delete-s3-backend", "tunnel-dashboard"]
     )
 
     parser.add_argument(
@@ -205,6 +229,9 @@ def main():
         elif args.action == "delete-s3-backend":
             backend_config = read_backend_config()
             delete_s3_bucket(backend_config["bucket"], backend_config["region"])
+
+        elif args.action == "tunnel-dashboard":
+            tunnel_dashboard()
     
     except Exception as e:
         print(f"An error occurred: {e}", file=sys.stderr)
