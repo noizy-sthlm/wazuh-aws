@@ -3,3 +3,10 @@ terraform/.terraform/
 *.terraform
 
 .devcontainer/
+.vscode/
+
+ansible/playbooks/indexer
+ansible/inventory.ini
+ansible/wazuh-ansible/
+
+config/
