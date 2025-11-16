@@ -107,7 +107,7 @@ Then open yor browser to https://localhost/
 >[!NOTE]
 >Your browser may warn about an insecure connection. Proceed.
 
-### 2 : Clean up
+### 4 : Clean up
 When you want to destroy the infrastructure
 ```bash
 docker run -rm \
