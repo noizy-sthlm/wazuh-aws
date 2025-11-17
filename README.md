@@ -1,17 +1,15 @@
 # Wazuh on AWS
 
-This project automatically deploys Wazuh on AWS. It provides a distributed single-node Wazuh infrastructure suitable for labbing and testing. The infrastructure has been designed to keep the cost low compared to alternative designs such as multi-node or all-in-one deployments.
+**This project automatically deploys Wazuh on AWS. It provides a distributed single-node Wazuh infrastructure suitable for labbing and testing. The infrastructure has been designed to keep the costs low compared to alternatives such as multi-node and all-in-one deployments.**
 
-## How to use this project
-
-### Prerequisites
-Before you begin, make sure that you have:
-
+## Prerequisites
   - Docker Engine on an AMD64- or ARM64-Linux host
   - AWS IAM user (see [IAM user]())
   - SSH key pair configured in AWS EC2
 
-### 1: Configuration files
+## How to use this project
+
+### Configuration
 
 In your working directory, create a `config/` directory and create:
 
@@ -51,15 +49,11 @@ dashboard_password: "dashboard" # Password for the default 'kibanaserver' user
 >Allways use strong passwords
 
 #### `config/id_rsa`
-The easiest option is to create a new key-pair in the AWS console and download the private key [Create a key pair for your Amazon EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-key-pairs.html)
+For the region you are deploying to, set up your ssh key in Amazon EC2 and place your private key, named `id_rsa` in `configure/`. The easiest method is to generate a new key-pair in the AWS Console and download the private key (see [Create a key pair for your Amazon EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-key-pairs.html)).
 
-In the region you are deploying to, set up your ssh key in AWS EC2 and get your private key in the working directory. You can read [Create a key pair for your Amazon EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-key-pairs.html) for help on how to do this. The easiest option is to create a new keypair in the AWS Console and download the private key. The key should be in secrets/id_rsa
+### AWS Secrets
 
-**Configure an ssh key-pair**
-
-### 2 : AWS Secrets
-
-In your working directory, create a `aws/` directory and create:
+In your working directory, create the `aws/` directory and create:
 
 #### `aws/credentials`
 
@@ -69,7 +63,7 @@ aws_access_key_id = AKIAIOSFODNN7EXAMPLE
 aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ```
 
-### 3 : Pull and Run the container image
+### Usage
 
 #### Pull the image
 ```bash
@@ -107,7 +101,7 @@ Then open yor browser to https://localhost/
 >[!NOTE]
 >Your browser may warn about an insecure connection. Proceed.
 
-### 4 : Clean up
+### Cleanup and Teardown
 When you want to destroy the infrastructure
 ```bash
 docker run -rm \
