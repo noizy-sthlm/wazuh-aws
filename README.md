@@ -4,7 +4,7 @@
 
 ## Prerequisites
   - Docker Engine on an AMD64- or ARM64-Linux host
-  - AWS IAM user (see [Roadmap](Roadmap))
+  - AWS IAM user (see [Roadmap](#roadmap))
   - SSH key pair configured in AWS EC2
 
 ## How to use this project
