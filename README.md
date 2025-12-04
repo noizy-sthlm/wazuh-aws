@@ -4,7 +4,7 @@
 
 ## Prerequisites
   - Docker Engine on an AMD64- or ARM64-Linux host
-  - AWS IAM user (see [IAM user]())
+  - AWS IAM user (see [Roadmap](Roadmap))
   - SSH key pair configured in AWS EC2
 
 ## How to use this project
@@ -118,6 +118,11 @@ docker run -rm \
   -p 443:443 \
   noizysthlm/wazuh-aws destroy
 ```
+
+## Roadmap
+  - Least Privilege IAM Permissions instead of using the AdministratorAccess policy which is overly permissive 
+  - An optional Wireguard VPN Instance for a secure and stable connection
+  - Unattended security upgrades for the Virtual Machines
 
 ## Contribute
 
